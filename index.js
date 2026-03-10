@@ -25,6 +25,10 @@ app.use(express.json());
 app.use(bodyParser.json());
 app.use(morgan("tiny"));
 
+//Rotas Companys
+const companysRoutes = require("./routes/companysRoutes");
+app.use(`${api}/companys`, companysRoutes);
+
 //Rotas Units
 const unitsRoutes = require("./routes/unitsRoutes");
 app.use(`${api}/units`, unitsRoutes);
