@@ -13,9 +13,9 @@ router.post("/", async(req, res) => {
         email:      req.body.email.toUpperCase(),
         nome:       req.body.nome.toUpperCase(),
         senha:      req.body.senha,
-        telefone:   req.body,telefone,
+        telefone:   req.body.telefone,
         situacao:   req.body.situacao ? req.body.situacao.toUpperCase() : 'ATIVO',
-        company:    idCompanys
+        companys:   req.body.companys
     });
 
     //Verificar se já existe
@@ -39,10 +39,10 @@ router.get('/', async(req, res) => {
 
     if (email)  filter.email    = email;
     if (nome)   filter.nome     = nome;
-    
+
     const userList = await User.find(filter)
-                                .populate('company')
-                                .sort({nome: 1});
+                                .sort({nome: 1})
+                                .populate("companys")
 
     if(userList.length === 0) {
 
@@ -74,9 +74,9 @@ router.put("/:id", async(req, res) => {
             email:      req.body.email.toUpperCase(),
             nome:       req.body.nome.toUpperCase(),
             senha:      req.body.senha,
-            telefone:   req.body,telefone,
-            situacao:   req.body.situacao.toUpperCase(),
-            company:    idCompanys
+            telefone:   req.body.telefone,
+            situacao:   req.body.situacao ? req.body.situacao.toUpperCase() : 'ATIVO',
+            companys:   req.body.companys
         },
         {new: true}
     );

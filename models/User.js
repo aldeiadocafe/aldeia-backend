@@ -6,9 +6,9 @@ const userSchema = new mongoose.Schema({
     senha:      { type: String, required: true },
     telefone:   { type: String },
     situacao:   { type: String, required: true},    //Ativo, Inativo
-    parents: [{
+    companys: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Compay'
+        ref: 'Company'
     }]
 });
 
