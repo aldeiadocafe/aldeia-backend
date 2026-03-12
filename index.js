@@ -29,6 +29,10 @@ app.use(morgan("tiny"));
 const companysRoutes = require("./routes/companysRoutes");
 app.use(`${api}/companys`, companysRoutes);
 
+//Rotas Users
+const usersRoutes = require("./routes/usersRoutes");
+app.use(`${api}/users`, usersRoutes);
+
 //Rotas Units
 const unitsRoutes = require("./routes/unitsRoutes");
 app.use(`${api}/units`, unitsRoutes);

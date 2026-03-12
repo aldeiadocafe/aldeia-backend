@@ -10,8 +10,8 @@ router.post("/", async(req, res) => {
     await connectDB()
 
     let unit = new Unit({
-        unidade:    req.body.unidade,
-        descricao:  req.body.descricao
+        unidade:    req.body.unidade.toUpperCase(),
+        descricao:  req.body.descricao.toUpperCase()
     });
 
     //Verificar se já existe a unidade
