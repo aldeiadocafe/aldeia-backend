@@ -25,6 +25,10 @@ app.use(express.json());
 app.use(bodyParser.json());
 app.use(morgan("tiny"));
 
+//Rotas Login
+const loginRoutes = require("./routes/authRoutes");
+app.use(`${api}/login`, loginRoutes);
+
 //Rotas Companys
 const companysRoutes = require("./routes/companysRoutes");
 app.use(`${api}/companys`, companysRoutes);

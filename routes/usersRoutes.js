@@ -1,4 +1,5 @@
 const express = require("express");
+const bcrypt = require('bcryptjs');
 const router = express.Router();
 
 const User = require("../models/User");
@@ -9,10 +10,13 @@ router.post("/", async(req, res) => {
 
     await connectDB()
 
+    // 1. Gerar salt e hash (10 é o custo padrão/recomendado)
+    const hashedPassword = await bcrypt.hash(req.body.senha, 10);
+
     let user = new User({
         email:      req.body.email.toUpperCase(),
         nome:       req.body.nome.toUpperCase(),
-        senha:      req.body.senha,
+        senha:      hashedPassword,
         telefone:   req.body.telefone,
         situacao:   req.body.situacao ? req.body.situacao.toUpperCase() : 'ATIVO',
         companys:   req.body.companys
@@ -28,6 +32,7 @@ router.post("/", async(req, res) => {
 
     res.send(user);
 
+//    res.send("teste")
 });
 
 router.get('/', async(req, res) => {
