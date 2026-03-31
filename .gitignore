@@ -34,7 +34,6 @@ build/
 # MongoDB
 *.log
 data/
-db/
 .mongod.log
 
 # OS
