@@ -26,8 +26,8 @@ router.post("/", async(req, res) => {
     });
 
     //Verificar se já existe
-    const userVerifica = await User.find({email: req.body.email});
-    if(userVerifica.length != 0) return res.status(404).send("Usuário já cadastrado!");
+    const userVerifica = await User.find({nome: req.body.nome});
+    if(userVerifica.length != 0) return res.status(404).send("Nome já cadastrado!");
 
     user = await user.save();
 

@@ -8,38 +8,52 @@ const router = express.Router();
 
 router.post("/", async (req, res) => {
 
-  const { email, senha } = req.body;
+  const { nome, senha } = req.body;
 
   let user
-console.log("email", process.env.ADMIN_EMAIL)
-console.log("senha", process.env.ADMIN_PASSWORD)
+  
   //Verifica se é usuario Admin
-  if (email.toUpperCase() === process.env.ADMIN_EMAIL
+  if (nome.toUpperCase() === process.env.ADMIN_NOME
       && senha === process.env.ADMIN_PASSWORD) {
 
-    //Se não existir, cria registro user
-    user = await User.findOne({ email: email.toUpperCase() });
+    try{ 
 
-    if (!user) {
+      //Se não existir, cria registro user
+      user = await User.findOne({ nome: nome.toUpperCase() });
 
-      // 1. Gerar salt e hash (10 é o custo padrão/recomendado)
-      const hashedPassword = await bcrypt.hash(req.body.senha, 10);
+      if (!user) {
 
-      let user = new User({
-          email:      email.toUpperCase(),
-          nome:       email.toUpperCase(),
-          senha:      hashedPassword,
-          situacao:   'ATIVO',
+        // 1. Gerar salt e hash (10 é o custo padrão/recomendado)
+        const hashedPassword = await bcrypt.hash(req.body.senha, 10);
+
+        let user = new User({
+            nome:       nome.toUpperCase(),
+            email:      nome.toUpperCase(),
+            senha:      hashedPassword,
+            situacao:   'ATIVO',
+        });
+
+        user = await user.save();
+
+      }
+
+    } catch (error) {
+
+      // ESSENCIAL: Logar o erro no terminal do servidor
+      console.error("Erro no Mongoose:", error);
+
+      // Retornar o erro para o React
+      res.status(500).json({ 
+          message: 'Erro ao atualizar no banco de dados', 
+          error: error.message 
       });
-
-      user = await user.save();
 
     }
 
   } else {
 
     // 1. Verificar se usuário existe no MongoDB
-    user = await User.findOne({ email: email })
+    user = await User.findOne({ nome: nome })
                     .populate([
                         { path: "empresas", select: 'nome' },
                         { path: 'usuarioCriacao',   select: 'nome email'},
