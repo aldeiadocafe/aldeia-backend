@@ -4,6 +4,9 @@ const router = express.Router();
 const Unit = require("../models/Unit");
 const Item = require("../models/Item");
 
+const StockBalance = require("../models/StockBalance");
+const DatesItemBalance = require("../models/DatesItemBalance")
+
 //Criar Item
 router.post("/", async(req, res) => {
 
@@ -122,7 +125,18 @@ router.put("/:id", async(req, res) => {
 });
 
 //Eliminar Item
-router.delete("/:id", (req, res) => {
+router.delete("/:id", async (req, res) => {
+
+    const item = await Item.findById(req.params.id);
+    if (!item) return res.status(404).json({message: "Item não encontrado!"});  
+
+    //Verifica se o Item está sendo utilizado
+    const stock = await StockBalance.find({item: item._id});
+    if (stock && stock.length > 0) return res.status(404).json({message: "Item utilizado no estoque!"});
+
+    const dates = await DatesItemBalance.find({item: item._id});
+    if (dates && dates.length > 0) return res.status(404).json({message: "Item com Data Validade utilizado!"});
+
     Item.findByIdAndDelete(req.params.id)
         .then((item) => {
             if (item){
@@ -142,6 +156,7 @@ router.delete("/:id", (req, res) => {
                 error: err
             });
         });
+
 });
 
 module.exports = router;
