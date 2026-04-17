@@ -44,11 +44,52 @@ router.post("/", async(req, res) => {
 
     }
 
-    inventory = await inventory.save();
+    //Iniciar sessao
+    const session = await mongoose.startSession()
+    
+    //Iniciar Transacao
+    session.startTransaction()
 
-    if(!inventory) return res.status(400).send("O Inventário não pode ser criado!");
+    try {
 
-    res.send(inventory);
+        inventory = await inventory.save();
+
+        if(!inventory) return res.status(400).send("O Inventário não pode ser criado!");
+
+        //Criar Localização do Inventário
+        let placesInventory = new PlacesInventory({
+            inventory: inventory._id,
+            local:          inventory.descricao,
+            usuarioCriacao: inventory.usuarioCriacao,
+            dataCriacao:    inventory.dataCriacao,
+            situacao:       'EM PROCESSO',
+
+        });
+
+        placesInventory = await placesInventory.save();
+        if(!placesInventory) return res.status(400).send("A Localização do Inventário não pode ser criada!");
+
+        // Salvar todas as operações
+        await session.commitTransaction();
+        return res.status(200).send(inventory)
+/*
+        await session.abortTransaction()
+        return res.status(200).send("teste")
+*/
+    } catch (error) {
+
+        console.log(error)
+
+        //Abortar
+        await session.abortTransaction()
+
+        res.status(400).send("Não foi possível criar Inventário")
+
+    } finally {
+
+        //Finalizar a sessao
+        session.endSession()
+    }
 
 });
 
@@ -72,6 +113,7 @@ router.post("/finalizar", async(req, res) => {
         return res.status(404).json({message: "Inventário sem localização!"})
     } 
 
+/*    
     const placesDifFin = await PlacesInventory.findOne({
         inventory: inventoryId,
         situacao: {$ne: "FINALIZADO"}
@@ -79,6 +121,7 @@ router.post("/finalizar", async(req, res) => {
     if (placesDifFin) {
         return res.status(404).json({message: "Existe Localização não FINALIZADA!"})
     } 
+*/
 
     const countPlaces = await CountPlaces.findOne({
         placesInventory: places._id
@@ -360,30 +403,76 @@ router.put("/:id", async(req, res) => {
 
 router.delete("/:id", async (req, res) => {
 
-    const placesVerifica = await PlacesInventory.find({inventory: req.params.id});
-    if (placesVerifica.length >0 ) return res.status(404).send('Existe Local relacionado ao Inventário!');
+    //Iniciar sessao
+    const session = await mongoose.startSession()
+    
+    //Iniciar Transacao
+    session.startTransaction()
 
+    try {
 
-    Inventory.findByIdAndDelete(req.params.id)
-        .then((inventory) => {
-            if (inventory){
-                return res.status(200).json({
-                    success: true,
-                    message: "Inventário eliminado!"
-                });
-            } else {
-                return res.status(404).json({
-                    success: false,
-                    message: "Inventário não localizado!"
-                });
+        const places = await PlacesInventory.findOne({
+            inventory: req.params.id,
+        })        
+
+        if (places) {
+            const countPlaces = await CountPlaces.findOne({
+                placesInventory: places._id
+            })
+            if (countPlaces) {
+                return res.status(404).json({message: "Existe contagem para este inventário!"})
             }
-        }).catch((err) => {
-            return res.status(500).json({
-                success: false,
-                error: err
+        }
+
+        await PlacesInventory.deleteMany({ inventory: req.params.id}, {session});             
+/*
+        const placesVerifica = await PlacesInventory.find({inventory: req.params.id});
+        if (placesVerifica.length >0 ) return res.status(404).send('Existe Local relacionado ao Inventário!');
+*/
+
+        await Inventory.findByIdAndDelete(req.params.id)
+            .session(session)
+            .then((inventory) => {
+                if (inventory){
+                    return res.status(200).json({
+                        success: true,
+                        message: "Inventário eliminado!"
+                    });
+                } else {
+                    return res.status(404).json({
+                        success: false,
+                        message: "Inventário não localizado!"
+                    });
+                }
+            }).catch((err) => {
+                return res.status(500).json({
+                    success: false,
+                    error: err
+                });
             });
-        });
         
+        // Salvar todas as operações
+        await session.commitTransaction();
+        return res.status(200).send(inventory)
+/*
+        await session.abortTransaction()
+        return res.status(200).send("teste")
+*/
+    } catch (error) {
+
+        console.log(error)
+
+        //Abortar
+        await session.abortTransaction()
+
+        res.status(400).send("Não foi possível eliminar Inventário")
+
+    } finally {
+
+        //Finalizar a sessao
+        session.endSession()
+    }
+
 });
 
 module.exports = router;
