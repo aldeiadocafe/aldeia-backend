@@ -8,38 +8,30 @@ const ConversationsItem = require("../models/ConversationsItem");
 //Criar Item
 router.post("/", async(req, res) => {
 
-    const unit = await Unit.findById(req.body.unit);
-    if (!unit) return res.status(404).json({message: "Unidade inválida!"});
+    const item = await Item.findById(req.body.item);
+    if (!item) return res.status(404).json({message: "Item inválido!"});
+
+    const unitConversao = await Unit.findById(req.body.unitConversao);
+    if (!unitConversao) return res.status(404).json({message: "Unidade de Conversão inválida!"});
 
     //Verifica se o Item já foi cadastrado
-    const { codigo, ean } = req.body; // Pega os parâmetros da URL
-    const filter = {};
-
-    if (codigo) {
-
-        filter.codigo = codigo
-
-        const codVerifica = await ConversationsItem.find(filter);
-        if(codVerifica.length != 0) return res.status(404).send("Código de Item já cadastrado!");
-
-    }
+    const { ean } = req.body; // Pega os parâmetros da URL
 
     if (ean) { 
 
-        filter.ean = ean
-        const codVerifica = await ConversationsItem.find(filter);
+        const codVerifica = await ConversationsItem.find({ean: ean});
         if(codVerifica.length != 0) return res.status(404).send("Código EAN já cadastrado!");
 
     }
 
     let conversations = new ConversationsItem({
-        codigo:         req.body.codigo.toUpperCase(),
-        descricao:      req.body.descricao.toUpperCase(),
+        item:           req.body.item,
+        unitConversao:  unitConversao,
+        ean:            req.body.ean.toUpperCase(),
         fator:          req.body.fator,
+        usuarioCriacao: req.body.usuarioCriacao,
         dataCriacao:    new Date(),
         situacao:       'ATIVO',
-        item,
-        unit
     });
 
     conversations = await conversations.save();
@@ -54,17 +46,29 @@ router.post("/", async(req, res) => {
 router.get('/', async(req, res) => {
     //res.status(200).send("chegou em itens");
 
-    const { itCodigo, codigo, ean } = req.body
+    const { item, itCodigo, codigo, ean } = req.query
     const filter = {}
 
-    if (itCodigo)   filter.itCodigo = itCodigo
+    if (item)       filter.item     = item
     if (codigo)     filter.codigo   = codigo
     if (ean)        filter.ean      = ean
 
-    const itemList = await Item.find(fitler)
-                               .sort({descricao: 1})
-                               .populate("item")
-                               .populate("unit");
+    if (itCodigo) {
+        const itemObj = await Item.findOne ({itCodigo: itCodigo.toUpperCase()})
+        filter.item = itemObj ?  itemObj._id : null
+    }
+
+    const itemList = await ConversationsItem.find(filter)                                
+                               .sort({descricao: 1,
+                                      codigo: 1 
+                               })
+//                               .populate("item")
+                               .populate({
+                                    path: "item",
+                                    populate: { path: "unit", model: "Unit"}
+                                })
+                               .populate("unitConversao")
+
 
     if(!itemList) {
         res.status(500).json({success: false});

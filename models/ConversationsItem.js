@@ -6,16 +6,23 @@ const converstionsItemSchema = new mongoose.Schema({
         ref:        "Item",
         required:   true
     },
-    unit: {
+    unitConversao: {
         type:       mongoose.Schema.Types.ObjectId,
         ref:        "Unit",
         required:   true
     },
-    codigo:     { type: String },
-    descricao:  { type: String, required: true },
     ean:        { type: String },
     fator:      { type: Number, required: true },
     dataCriacao:{type: Date},
+    usuarioCriacao: {
+        type:       mongoose.Schema.Types.ObjectId,
+        ref:        "User",
+    },
+    dataAlteracao:{type: Date},
+    usuarioAlteracao: {
+        type:       mongoose.Schema.Types.ObjectId,
+        ref:        "User",
+    },
     situacao:   {type: String},     //Ativo; Obsoleto
 
 })

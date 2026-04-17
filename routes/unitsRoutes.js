@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
+const Item = require("../models/Item");
 const Unit = require("../models/Unit");
 const { connectDB } = require("../db/connectDB");
 
@@ -97,6 +98,10 @@ router.put("/:id", async(req, res) => {
 });
 
 router.delete("/:id", (req, res) => {
+
+    //Verificar se a unidade está sendo utilizada em algum produto
+    const item =  Item.find({unit: req.params.id});
+    if(item.length != 0) return res.status(404).send("Existe Item com essa unidade!");
 
     Unit.findByIdAndDelete(req.params.id)
         .then((unit) => {
