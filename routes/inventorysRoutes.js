@@ -199,6 +199,12 @@ router.post("/finalizar", async(req, res) => {
 
         await DatesItemBalance.insertMany(dateItemsAtualiz, {session})
 
+        await PlacesInventory.updateMany(
+            { inventory: inventory._id },
+            { $set: { situacao: 'FINALIZADO' , usuarioAlteracao: usuarioAlteracao } },
+            { session }
+        );
+
         await Inventory.findByIdAndUpdate(
             inventoryId,
             {   $set: {                             // Atualiza apenas um campo
@@ -217,6 +223,7 @@ router.post("/finalizar", async(req, res) => {
         await session.abortTransaction()
         return res.status(200).send("teste")
 */
+
     } catch (error) {
 
         console.log(error)

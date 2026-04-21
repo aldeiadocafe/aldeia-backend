@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
 
+const mongoose = require("mongoose")
+
 const Unit = require("../models/Unit");
 const Item = require("../models/Item");
 
@@ -38,6 +40,90 @@ router.post("/", async(req, res) => {
     if(!item) return res.status(400).send("o item não pode ser criado!");
 
     res.send(item);
+
+});
+
+//Criar Item GCOM
+router.post("/gcom", async(req, res) => {
+
+    //Iniciar sessao
+    const session = await mongoose.startSession()
+
+    //Iniciar Transacao
+    session.startTransaction()
+
+    try {
+
+        const items = req.body  // Array
+
+        if (!Array.isArray(items)) {
+            return res.status(404).json({ message: 'O corpo da requisição deve ser um array' });
+        }
+
+        // 1. Extrair unidades únicas do array para evitar buscas repetidas
+        const unidadesParaVerificar = [...new Set(items.map(i => i.unit))];
+
+        // 2. Verificar no banco de dados se essas unidades existem
+        const unidadesExistentes = await Unit.find({
+            _id: { $in: unidadesParaVerificar }
+            });
+
+        if (unidadesExistentes.length !== unidadesParaVerificar.length) {
+            return res.status(404).json({
+                message: 'Uma ou mais unidades de medida não são válidas.'
+            });
+        }
+
+/*        
+        // 3. Se tudo estiver correto, criar itens
+        const novosItens = await Item.insertMany(items);
+        res.status(201).json(novosItens);
+*/
+        // Prepara as operações para o bulkWrite
+        const operations = items.map(item => ({
+            updateOne: {
+                filter: { itCodigo: item.itCodigo }, // Verifica por este campo
+                update: { $setOnInsert: {
+                    itCodigo:           item.itCodigo.toUpperCase(),
+                    descricao:          item.descricao.toUpperCase(),
+                    situacao:           item.situacao.toUpperCase(),
+                    unit:               item.unit,
+                    dataCriacao:        new Date(),
+                    usuarioCriacao:     item.usuarioCriacao,
+                } }, // Cria apenas se não existir
+                upsert: true // Ativa a criação se não encontrar
+            }
+        }));
+
+        // Executa tudo de uma vez
+        const itemsCreate = await Item.bulkWrite(operations, {session});
+
+        // Salvar todas as operações
+        await session.commitTransaction();
+
+        // Carregar Itens criados usando os IDs retornados pelo bulkWrite
+        const upsertedIds = Object.values(itemsCreate.upsertedIds);
+        const itemsCriados = await Item.find({ _id: { $in: upsertedIds } });
+        return res.status(200).send(itemsCriados)
+/*        
+        await session.abortTransaction()
+        return res.status(200).send(itemsCriados)
+*/
+    } catch (error) {
+
+        //Abortar
+        await session.abortTransaction()
+
+        return res.status(404).json({ 
+                success: false,
+                message: 'Erro ao criar itens GCom'
+            });
+
+    } finally {
+
+        //Finalizar a sessao
+        session.endSession()
+    }
 
 });
 

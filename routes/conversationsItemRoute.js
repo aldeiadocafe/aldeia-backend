@@ -59,15 +59,12 @@ router.get('/', async(req, res) => {
     }
 
     const itemList = await ConversationsItem.find(filter)                                
-                               .sort({descricao: 1,
-                                      codigo: 1 
-                               })
-//                               .populate("item")
                                .populate({
                                     path: "item",
                                     populate: { path: "unit", model: "Unit"}
                                 })
                                .populate("unitConversao")
+                               .sort({ 'item.descricao': 1 });
 
 
     if(!itemList) {

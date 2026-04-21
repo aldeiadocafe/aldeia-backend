@@ -3,7 +3,9 @@ const router = express.Router();
 
 const mongoose = require("mongoose")
 
-const StockBalance  = require("../models/StockBalance")
+const StockBalance  = require("../models/StockBalance");
+const Item = require("../models/Item");
+const DatesItemBalance = require("../models/DatesItemBalance");
 
 // Criar
 router.post("/", async(req, res) => {
@@ -49,6 +51,12 @@ router.post("/gcomestoque", async(req, res) => {
 
     const items = req.body  // Array: [{_id, gcomEstoque}]
 
+    //Iniciar sessao
+    const session = await mongoose.startSession()
+
+    //Iniciar Transacao
+    session.startTransaction()
+
     try {
 
         //Cria um array de operações
@@ -58,26 +66,129 @@ router.post("/gcomestoque", async(req, res) => {
                 update: { $set: { 
                     gcomEstoque: item.gcomEstoque,
                     dataGCom: new Date()
-                }}
+                }},
+                upsert: true // Ativa a criação se não encontrar
             }
         }))
 
         // Executa as operações em massa
-        await StockBalance.bulkWrite(operations)
+        await StockBalance.bulkWrite(operations, { session })
+        
+        await session.commitTransaction();
 
         return res.status(200).json({ 
                 success: true,
                 message: 'Atualizado quantidade GCom'
-            });
+            });        
 
     } catch (error) {
+
+        //Abortar
+        await session.abortTransaction()
 
         return res.status(404).json({ 
                 success: false,
                 message: 'Erro ao atualizar quantidade GCom'
             });
 
+    } finally {
+
+        //Finalizar a sessao
+        session.endSession()
     }
+
+})
+
+//Criar Item x GCom Estoque
+router.post("/gcomcreate", async(req, res) => {
+
+    //Iniciar sessao
+    const session = await mongoose.startSession()
+
+    //Iniciar Transacao
+    session.startTransaction()
+
+    try {
+
+        const stockBalance = req.body  // Array:
+
+        const items = await Item.find()
+
+        //Cria um array de operações
+        const operationsStock = stockBalance.map( item => {
+
+            const itemConsulta = items.filter(i => i.descricao.trim().toUpperCase() === item.descricao.trim().toUpperCase() 
+                                                && i.itCodigo.trim().toUpperCase() === item.itCodigo.trim().toUpperCase())
+
+            return {
+            updateOne: {
+                filter: { _id: new mongoose.Types.ObjectId()},
+                update: { $set: { 
+                    empresa:        item.empresa,                    
+                    item:           itemConsulta.length > 0 ? itemConsulta[0]._id : null,
+                    gcomEstoque:    item.gcomEstoque,
+                    dataGCom:       new Date()
+                }},
+                upsert: true // Ativa a criação se não encontrar
+            }}
+        })
+
+        // Executa as operações em massa
+        const itemsCreate = await StockBalance.bulkWrite(operationsStock, { session })
+
+        //Cria um array de operações
+        const dataValidade = new Date().toISOString().split('T')[0]
+        const operationsDates = stockBalance.map( item => {
+
+            const itemConsulta = items.filter(i => i.descricao.trim().toUpperCase() === item.descricao.trim().toUpperCase() 
+                                                && i.itCodigo.trim().toUpperCase() === item.itCodigo.trim().toUpperCase())
+
+            return {
+                updateOne: {
+                    filter: { _id: new mongoose.Types.ObjectId(item._id)},
+                    update: { $set: { 
+                        empresa:        item.empresa,
+                        item:           itemConsulta.length > 0 ? itemConsulta[0]._id : null,
+                        dataValidade:   dataValidade,
+                        quantidade:     item.gcomEstoque,
+                    }},
+                    upsert: true // Ativa a criação se não encontrar
+                }
+            }
+        })
+        
+        // Executa as operações em massa
+        const datesCreate = await DatesItemBalance.bulkWrite(operationsDates, { session })
+        
+
+        // Salvar todas as operações
+        await session.commitTransaction();
+
+        // Carregar Itens criados usando os IDs retornados pelo bulkWrite
+        const upsertedIds = Object.values(itemsCreate.upsertedIds);
+        const itemsCriados = await Item.find({ _id: { $in: upsertedIds } });
+
+        return res.status(200).send(itemsCriados)
+/* 
+        await session.abortTransaction()
+        return res.status(200).send(operationsStock)
+*/
+    } catch (error) {
+
+        //Abortar
+        await session.abortTransaction()
+
+        return res.status(404).json({ 
+                success: false,
+                message: 'Erro ao atualizar quantidade GCom'
+            });
+
+    } finally {
+
+        //Finalizar a sessao
+        session.endSession()
+    }
+
 
 })
 
