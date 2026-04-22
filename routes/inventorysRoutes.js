@@ -175,7 +175,8 @@ router.post("/finalizar", async(req, res) => {
 
         //Atribui campos como um array de objetos ({ })
         const stockAtualiz = itemsInv
-            .filter((item) => item.quantidade > 0)
+//            .filter((item) => item.quantidade > 0)
+            .filter((item) => item.quantidade !== undefined)
             .map(item => ({
                 item:           item.item,
                 quantidade:     item.quantidade,
@@ -186,7 +187,8 @@ router.post("/finalizar", async(req, res) => {
         }))
 
         const dateItemsAtualiz = datesItemInv
-            .filter((item) => item.quantidade > 0)
+//            .filter((item) => item.quantidade > 0)
+            .filter((item) => item.quantidade !== undefined)
             .map(cont => ({
                 item:           cont.itemsInventory.item._id,
                 dataValidade:   cont.dataValidade,
