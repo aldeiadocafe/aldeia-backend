@@ -112,50 +112,52 @@ router.post("/gcomcreate", async(req, res) => {
 
         const stockBalance = req.body  // Array:
 
-        const items = await Item.find()
+        // 1. Extrair itCodigo únicas do array para evitar buscas repetidas
+        const itemsParaVerificar = [...new Set(stockBalance.map(i => i.itCodigo.toUpperCase().trim()))];
 
+        // 2. Verificar no banco de dados se essas unidades existem
+        const itemsExistentes = await Item.find({
+            itCodigo: { $in: itemsParaVerificar }
+            });
+
+        if (itemsExistentes.length !== itemsParaVerificar.length) {
+            return res.status(404).json({
+                message: 'Uma ou mais itens não são válidos.'
+            });
+        }
+        
         //Cria um array de operações
-        const operationsStock = stockBalance.map( item => {
-
-            const itemConsulta = items.filter(i => i.descricao.trim().toUpperCase() === item.descricao.trim().toUpperCase() 
-                                                && i.itCodigo.trim().toUpperCase() === item.itCodigo.trim().toUpperCase())
-
-            return {
+        const operationsStock = stockBalance.map( item => ({
             updateOne: {
                 filter: { _id: new mongoose.Types.ObjectId()},
                 update: { $set: { 
                     empresa:        item.empresa,                    
-                    item:           itemConsulta.length > 0 ? itemConsulta[0]._id : null,
+                    item:           item.item,
                     gcomEstoque:    item.gcomEstoque,
-                    dataGCom:       new Date()
+                    dataGCom:       new Date(2050,11,31)
                 }},
                 upsert: true // Ativa a criação se não encontrar
-            }}
-        })
+            }
+        }))
+
 
         // Executa as operações em massa
         const itemsCreate = await StockBalance.bulkWrite(operationsStock, { session })
 
         //Cria um array de operações
-        const dataValidade = new Date().toISOString().split('T')[0]
-        const operationsDates = stockBalance.map( item => {
-
-            const itemConsulta = items.filter(i => i.descricao.trim().toUpperCase() === item.descricao.trim().toUpperCase() 
-                                                && i.itCodigo.trim().toUpperCase() === item.itCodigo.trim().toUpperCase())
-
-            return {
-                updateOne: {
-                    filter: { _id: new mongoose.Types.ObjectId(item._id)},
-                    update: { $set: { 
-                        empresa:        item.empresa,
-                        item:           itemConsulta.length > 0 ? itemConsulta[0]._id : null,
-                        dataValidade:   dataValidade,
-                        quantidade:     item.gcomEstoque,
-                    }},
-                    upsert: true // Ativa a criação se não encontrar
-                }
+        const dataValidade = new Date(2025,11,31).toISOString().split('T')[0]
+        const operationsDates = stockBalance.map( item => ({
+            updateOne: {
+                filter: { _id: new mongoose.Types.ObjectId(item._id)},
+                update: { $set: { 
+                    empresa:        item.empresa,
+                    item:           item.item,
+                    dataValidade:   dataValidade,
+                    quantidade:     item.gcomEstoque,
+                }},
+                upsert: true // Ativa a criação se não encontrar
             }
-        })
+        }))
         
         // Executa as operações em massa
         const datesCreate = await DatesItemBalance.bulkWrite(operationsDates, { session })

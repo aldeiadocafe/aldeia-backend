@@ -61,7 +61,7 @@ router.post("/gcom", async(req, res) => {
         }
 
         // 1. Extrair unidades únicas do array para evitar buscas repetidas
-        const unidadesParaVerificar = [...new Set(items.map(i => i.unit))];
+        const unidadesParaVerificar = [...new Set(items.map(i => i.unit._id))];
 
         // 2. Verificar no banco de dados se essas unidades existem
         const unidadesExistentes = await Unit.find({
@@ -74,11 +74,13 @@ router.post("/gcom", async(req, res) => {
             });
         }
 
+
 /*        
         // 3. Se tudo estiver correto, criar itens
         const novosItens = await Item.insertMany(items);
         res.status(201).json(novosItens);
 */
+
         // Prepara as operações para o bulkWrite
         const operations = items.map(item => ({
             updateOne: {
@@ -94,7 +96,7 @@ router.post("/gcom", async(req, res) => {
                 upsert: true // Ativa a criação se não encontrar
             }
         }));
-
+console.log(operations)
         // Executa tudo de uma vez
         const itemsCreate = await Item.bulkWrite(operations, {session});
 
@@ -109,6 +111,7 @@ router.post("/gcom", async(req, res) => {
         await session.abortTransaction()
         return res.status(200).send(itemsCriados)
 */
+
     } catch (error) {
 
         //Abortar
