@@ -145,7 +145,7 @@ router.post("/gcomcreate", async(req, res) => {
         const itemsCreate = await StockBalance.bulkWrite(operationsStock, { session })
 
         //Cria um array de operações
-        const dataValidade = new Date(2025,11,31).toISOString().split('T')[0]
+        const dataValidade = new Date(2050,11,31).toISOString().split('T')[0]
         const operationsDates = stockBalance.map( item => ({
             updateOne: {
                 filter: { _id: new mongoose.Types.ObjectId(item._id)},
