@@ -16,18 +16,26 @@ router.post("/", async(req, res) => {
     if (!unit) return res.status(404).json({message: "Unidade inválida!"});
 
     //Verifica se o Item já foi cadastrado
-    const { itCodigo } = req.body; // Pega os parâmetros da URL
-    const filter = {};
+    const { itCodigo, descricao } = req.body; // Pega os parâmetros da URL
 
-    if (itCodigo) filter.itCodigo = itCodigo;
-    
-    const itemVerifica = await Item.find(filter);
-    
-    if(itemVerifica.length != 0) return res.status(404).send("Item já cadastrado!");
+    if (itCodigo) {
+
+        const itCodigoVerifica = await Item.find({"itCodigo": itCodigo.toUpperCase().trim()});    
+        if(itCodigoVerifica.length != 0) return res.status(404).send("Código do Item já cadastrado!");
+
+    }
+
+    if (descricao) {
+
+        const descricaoVerifica = await Item.find({"descricao": descricao.toUpperCase().trim()});    
+        if(descricaoVerifica.length != 0) return res.status(404).send("Descrição do Item já cadastrado!");
+
+    }
+
 
     let item = new Item({
-        itCodigo:           req.body.itCodigo.toUpperCase(),
-        descricao:          req.body.descricao.toUpperCase(),
+        itCodigo:           req.body.itCodigo.toUpperCase().trim(),
+        descricao:          req.body.descricao.toUpperCase().trim(),
         situacao:           req.body.situacao.toUpperCase(),
         unit,
         dataCriacao:        new Date(),
@@ -96,7 +104,7 @@ router.post("/gcom", async(req, res) => {
                 upsert: true // Ativa a criação se não encontrar
             }
         }));
-console.log(operations)
+
         // Executa tudo de uma vez
         const itemsCreate = await Item.bulkWrite(operations, {session});
 
