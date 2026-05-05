@@ -202,12 +202,14 @@ router.get('/', async(req, res) => {
     
     if (item) filter.item = item
 
-    const stockBalanceList = await StockBalance.find(filter)
+    const stockBalanceAux = await StockBalance.find(filter)
                                          .populate([
                                             { path: 'empresa' },
                                             { path: 'item' },
                                         ])
                                          .sort({item: 1});
+
+    const stockBalanceList = stockBalanceAux.filter(stock => stock.item != null)
 
     if(stockBalanceList.length == 0) {
 

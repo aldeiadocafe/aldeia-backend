@@ -92,10 +92,10 @@ router.post("/gcom", async(req, res) => {
         // Prepara as operações para o bulkWrite
         const operations = items.map(item => ({
             updateOne: {
-                filter: { itCodigo: item.itCodigo }, // Verifica por este campo
+                filter: { itCodigo: item.itCodigo.toUpperCase().trim() }, // Verifica por este campo
                 update: { $setOnInsert: {
-                    itCodigo:           item.itCodigo.toUpperCase(),
-                    descricao:          item.descricao.toUpperCase(),
+                    itCodigo:           item.itCodigo.toUpperCase().trim(),
+                    descricao:          item.descricao.toUpperCase().trim(),
                     situacao:           item.situacao.toUpperCase(),
                     unit:               item.unit,
                     dataCriacao:        new Date(),
