@@ -209,7 +209,9 @@ router.get('/', async(req, res) => {
                                         ])
                                          .sort({item: 1});
 
-    const stockBalanceList = stockBalanceAux.filter(stock => stock.item != null)
+    const stockBalanceList = stockBalanceAux
+                                .filter(stock => stock.item != null)
+                                .filter(stock => stock.empresa != null)
 
     if(stockBalanceList.length == 0) {
 
