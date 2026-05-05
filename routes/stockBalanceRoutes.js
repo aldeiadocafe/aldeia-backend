@@ -212,13 +212,13 @@ router.get('/', async(req, res) => {
     const stockBalanceList = stockBalanceAux
                                 .filter(stock => stock.item != null)
                                 .filter(stock => stock.empresa != null)
-
+/*
     if(stockBalanceList.length == 0) {
 
         return res.status(404).json({message: "Item Saldo não localizado!"});        
 
     };
-
+*/
     return res.status(200).send(stockBalanceList);
 
 });
