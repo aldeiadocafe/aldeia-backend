@@ -49,6 +49,10 @@ app.use(`${api}/units`, unitsRoutes);
 const itemsRoutes = require("./routes/itemsRoutes");
 app.use(`${api}/items`, itemsRoutes);
 
+//Rotas Stock Balance
+const safetyStockRoutes = require("./routes/safetyStockRoutes");
+app.use(`${api}/safetystock`, safetyStockRoutes);
+
 //Rotas Inventorys
 const inventorysRoutes = require("./routes/inventorysRoutes");
 app.use(`${api}/inventorys`, inventorysRoutes);
@@ -71,7 +75,7 @@ app.use(`${api}/countplaces`, countPlacesRoutes);
 
 //Rotas Stock Balance
 const stockBalanceRoutes = require("./routes/stockBalanceRoutes");
-app.use(`${api}/stockbalance`, stockBalanceRoutes);
+app.use(`${api}/stockbalance`, safetyStockRoutes);
 
 //Rotas Dates Item Balance
 const datesItemBalanceRoutes = require("./routes/datesItemBalanceRoutes");
