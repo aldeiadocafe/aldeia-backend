@@ -49,6 +49,10 @@ app.use(`${api}/units`, unitsRoutes);
 const itemsRoutes = require("./routes/itemsRoutes");
 app.use(`${api}/items`, itemsRoutes);
 
+//Rotas Safety Stock
+const safetyStockRoutes = require("./routes/safetyStockRoutes");
+app.use(`${api}/safetystocks`, safetyStockRoutes);
+
 //Rotas Inventorys
 const inventorysRoutes = require("./routes/inventorysRoutes");
 app.use(`${api}/inventorys`, inventorysRoutes);

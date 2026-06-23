@@ -3,14 +3,14 @@ const router = express.Router();
 
 const mongoose = require("mongoose")
 
-const Safety    = require("../models/safetyStock");
-const Company   = require("../models/Company");
-const Item      = require("../models/Item");
+const SafetyStock   = require("../models/SafetyStock");
+const Company       = require("../models/Company");
+const Item          = require("../models/Item");
 
 // Criar
 router.post("/", async(req, res) => {
-    
-    let safetyStock = new Safety({
+
+    let safety = new SafetyStock({
         empresa:            req.body.empresa,
         item:               req.body.item,
         quantidadeMinima:   req.body.quantidadeMinima,
@@ -18,12 +18,21 @@ router.post("/", async(req, res) => {
         dataCriacao:        new Date()
     });
 
+    // Verifica duplicidade de Estoque de Segurança para o mesmo Item/Empresa
+    const filter = {};
+
+    if ( req.body.empresa)  filter.empresa    = req.body.empresa
+    if ( req.body.item   )  filter.item       = req.body.item
+
+    let safetyStockList = await SafetyStock.find(filter)
+    if(safetyStockList.length != 0) return res.status(404).send("Estoque de Segurança para este Item/Empresa já cadastrado!");
+
     //  Verificar se existe Empresa
-    const empresa = await Company.findById(safetyStock.empresa)
+    const empresa = await Company.findById(safety.empresa)
     if (!empresa) return res.status(404).send("Empresa não localizada!")
 
     //  Verificar se existe Item
-    const item = await Item.findById(safetyStock.item)
+    const item = await Item.findById(safety.item)
     if (!item) return res.status(404).send("Item não localizado!")
 
     //Iniciar sessao
@@ -34,10 +43,10 @@ router.post("/", async(req, res) => {
 
     try {
 
-        safetyStock = await safetyStock.save();
-        if(!safetyStock) return res.status(400).send("Estoque de Segurança/Empresa não pode ser criado!");
+        safety = await safety.save();
+        if(!safety) return res.status(400).send("Estoque de Segurança/Empresa não pode ser criado!");
 
-        res.send(safetyStock);
+        res.send(safety);
 
     } catch (error) {
 
@@ -54,7 +63,7 @@ router.post("/", async(req, res) => {
 
 router.get("/:id", async (req, res) => {
 
-    const safety = await Safety.findById(req.params.id)
+    const safety = await SafetyStock.findById(req.params.id)
                                             .populate([
                                                     { path: "empresa" },
                                                     { path: "item" },
@@ -77,8 +86,8 @@ router.get('/', async(req, res) => {
     
     const filter = {};
 
-    if ( empresa )    filter.empresa    = empresa
-    if ( item     )    filter.item       = item
+    if ( empresa )  filter.empresa    = empresa
+    if ( item    )  filter.item       = item
 
     let safetyStockList = await SafetyStock
                                         .find(filter)

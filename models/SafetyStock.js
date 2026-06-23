@@ -3,7 +3,8 @@ const mongoose = require("mongoose");
 const safetyStockSchema = new mongoose.Schema({
     empresa:            {
                             type: mongoose.Schema.Types.ObjectId,
-                            ref: 'Company'
+                            ref: 'Company',
+                            required:   true
                         },
     item:               {
                             type:       mongoose.Schema.Types.ObjectId,
@@ -22,6 +23,11 @@ const safetyStockSchema = new mongoose.Schema({
                             ref:        "User",
                         },
 
+    dataAlteracao:        {type: Date},
+    usuarioAlteracao:     {
+                            type:       mongoose.Schema.Types.ObjectId,
+                            ref:        "User",
+                        },
 });
 
 module.exports = mongoose.model("SafetyStock", safetyStockSchema);
