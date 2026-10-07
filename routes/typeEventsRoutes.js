@@ -37,7 +37,6 @@ router.get('/', async(req, res) => {
     if (tipoEvento) filter.tipoEvento = tipoEvento.toUpperCase().trim();
     
     const typeEventList = await TypeEvent.find(filter)
-                            .sort({tipoEvento: 1});
 
     if(typeEventList.length === 0) {
 
