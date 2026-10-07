@@ -44,7 +44,8 @@ router.get('/', async(req, res) => {
     const scheduleList = await Schedule.find(filter)
                                     .populate([
                                         { path: 'empresa'},
-                                        { path: 'usuario'}
+                                        { path: 'usuario'},
+                                        { path: 'tipoEvento'}
                                     ])
                                     .sort({empresa: 1, usuario: 1, dia: 1});
 
@@ -64,7 +65,8 @@ router.get("/:id", async (req, res) => {
     const schedule = await Schedule.findById(req.params.id)
                                     .populate([
                                         { path: 'empresa'},
-                                        { path: 'usuario'}
+                                        { path: 'usuario'},
+                                        { path: 'tipoEvento'}
                                     ])
 
 

@@ -102,7 +102,7 @@ const typeEventsRoutes = require("./routes/typeEventsRoutes");
 app.use(`${api}/typeEvents`, typeEventsRoutes);
 
 //Rotas Escala
-const schedulesRoutes = require("./routes/SchedulesRoutes");
+const schedulesRoutes = require("./routes/schedulesRoutes");
 app.use(`${api}/schedules`, schedulesRoutes);
 
 //app.listen(5000, () => {
