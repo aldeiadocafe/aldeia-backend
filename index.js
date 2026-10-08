@@ -4,17 +4,7 @@ const conn = require("./db/conn");
 
 //Tornar o servidor acessivel
 const cors = require("cors");
-//app.use(cors());
-
-const corsOptions = {
-  origin: '*', // Origem exata do seu frontend
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true,
-  optionsSuccessStatus: 200 // Importante para navegadores mais antigos/preflight
-};
-
-app.use(cors(corsOptions));
+app.use(cors());
 
 //para usar o .env
 require("dotenv/config");
