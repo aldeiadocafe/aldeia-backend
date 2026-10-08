@@ -5,11 +5,10 @@ const conn = require("./db/conn");
 //Tornar o servidor acessivel
 const cors = require("cors");
 //app.use(cors());
-// Allow requests from frontend (localhost:3000)
 app.use(cors({
-    origin: "https://app.aldeiadocafe.com.br",
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"]
+  origin: 'https://app.aldeiadocafe.com.br/',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true
 }));
 
 //para usar o .env
