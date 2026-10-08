@@ -3,7 +3,7 @@ const cors = require("cors");
 
 const app = express();
 
-app.use(cors());
+//app.use(cors());
 /*
 // Libera o CORS para todas as origens e métodos
 app.use(cors({
@@ -12,6 +12,28 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 */
+// Lista de sites permitidos a fazer requisições para a sua API
+const allowedOrigins = [
+  'https://app.aldeiadocafe.com.br',
+  'http://localhost:3000' // Para testes locais
+];
+
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Permite requisições sem "origin" (como Postman ou Apps mobile)
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Bloqueado pela política de CORS'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+};
+
+app.use(cors(corsOptions));
+
 const conn = require("./db/conn");
 
 
