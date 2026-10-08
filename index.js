@@ -4,12 +4,7 @@ const conn = require("./db/conn");
 
 //Tornar o servidor acessivel
 const cors = require("cors");
-//app.use(cors());
-app.use(cors({
-  origin: 'https://app.aldeiadocafe.com.br',
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  credentials: true
-}));
+app.use(cors());
 
 //para usar o .env
 require("dotenv/config");
