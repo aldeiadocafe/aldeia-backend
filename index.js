@@ -4,7 +4,14 @@ const cors = require("cors");
 const app = express();
 
 app.use(cors());
-
+/*
+// Libera o CORS para todas as origens e métodos
+app.use(cors({
+  origin: '*', // Permite qualquer domínio
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+*/
 const conn = require("./db/conn");
 
 
