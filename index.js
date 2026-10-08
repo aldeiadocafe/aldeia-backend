@@ -37,6 +37,8 @@ const bodyParser = require("body-parser")
 
 const morgan = require("morgan");
 
+app.options('*', cors())
+
 app.use(express.json());
 
 //app.get("/", (req, res) => {
