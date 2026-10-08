@@ -5,12 +5,7 @@ const cors = require("cors");
 
 const app = express();
 
-//app.use(cors());
-app.use(cors({
-  origin: 'https://app.aldeiadocafe.com.br',
-  methods: ["GET,OPTIONS,PATCH,DELETE,POST,PUT"],
-  credentials: true
-}));
+app.use(cors());
 
 const conn = require("./db/conn");
 
