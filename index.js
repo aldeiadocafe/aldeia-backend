@@ -7,7 +7,7 @@ const cors = require("cors");
 //app.use(cors());
 // Allow requests from frontend (localhost:3000)
 app.use(cors({
-    origin: "https://aldeia-backend.vercel.app",
+    origin: "https://app.aldeiadocafe.com.br",
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"]
 }));
