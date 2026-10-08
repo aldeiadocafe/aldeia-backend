@@ -6,26 +6,19 @@ const conn = require("./db/conn");
 const cors = require("cors");
 //app.use(cors());
 
-// Lista de origens permitidas
-const allowedOrigins = [
-//  'http://localhost:3000', // Seu React local (mude a porta se necessário)
-  'http://localhost:5173', // Se estiver usando Vite
-  'https://app.aldeiadocafe.com.br/', // Seu React em produção
-]
+app.use(cors({
+  origin: [
+    'http://localhost:5173', // Se estiver usando Vite
+    'https://app.aldeiadocafe.com.br'    // Substitua pela URL do seu frontend
+    ], 
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true
+}));
 
 app.use(cors({
-  origin: function (origin, callback) {
-    // Permite requisições sem origem (como aplicativos móveis, Postman, ou curl)
-    if (!origin) return callback(null, true);
-    
-    if (allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error('Não permitido pelo CORS'));
-    }
-  },
+  origin: 'https://vercel.app', // Substitua pela URL do seu frontend
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  credentials: true
 }));
 
 //para usar o .env
