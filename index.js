@@ -127,7 +127,7 @@ app.use(`${api}/conversationsitem`, conversationsItemRoutes);
 //Rotas Lista de Compra
 const shoppingsRoutes = require("./routes/shoppingsRoutes");
 app.use(`${api}/shoppings`, shoppingsRoutes);
-
+/*
 //Rotas Tipo de Evento
 const typeEventsRoutes = require("./routes/typeEventsRoutes");
 app.use(`${api}/typeEvents`, typeEventsRoutes);
@@ -135,7 +135,7 @@ app.use(`${api}/typeEvents`, typeEventsRoutes);
 //Rotas Escala
 const schedulesRoutes = require("./routes/schedulesRoutes");
 app.use(`${api}/schedules`, schedulesRoutes);
-
+*/
 //app.listen(5000, () => {
 app.listen(process.env.PORT, () => {    
     console.log("Servidor rodando na porta " + process.env.PORT); 
