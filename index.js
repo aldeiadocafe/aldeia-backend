@@ -4,7 +4,14 @@ const conn = require("./db/conn");
 
 //Tornar o servidor acessivel
 const cors = require("cors");
-app.use(cors());
+//app.use(cors());
+const corsOptions ={
+   origin:'*', 
+   credentials:true,            //access-control-allow-credentials:true
+   optionSuccessStatus:200,
+}
+
+app.use(cors(corsOptions)) // Use this after the variable declaration
 
 //para usar o .env
 require("dotenv/config");
