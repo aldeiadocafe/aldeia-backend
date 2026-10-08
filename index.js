@@ -1,11 +1,15 @@
 const express = require("express");
-
-//Tornar o servidor acessivel
 const cors = require("cors");
 
 const app = express();
 
-app.use(cors());
+//app.use(cors());
+// Enable CORS for the specified origin
+app.use(cors({
+    origin: 'https://app.aldeiadocafe.com.br',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 const conn = require("./db/conn");
 
