@@ -20,7 +20,7 @@ router.post("/", async(req, res) => {
     const scheduleVerifica = await Schedule.find(
         {empresa: req.body.empresa, usuario: req.body.usuario, dia:     req.body.dia}
     );
-    if(scheduleVerifica.length != 0) return res.status(404).send("Escala já cadastrada!");
+    if(scheduleVerifica.length != 0) return res.status(404).send("Escala já cadastrada");
 
     schedule = await schedule.save();
 
