@@ -4,7 +4,13 @@ const conn = require("./db/conn");
 
 //Tornar o servidor acessivel
 const cors = require("cors");
-app.use(cors());
+//app.use(cors());
+// Allow requests from frontend (localhost:3000)
+app.use(cors({
+    origin: "https://aldeia-backend.vercel.app",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"]
+}));
 
 //para usar o .env
 require("dotenv/config");
