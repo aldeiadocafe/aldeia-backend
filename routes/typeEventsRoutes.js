@@ -54,7 +54,7 @@ router.get("/:id", async (req, res) => {
     const typeEvent = await TypeEvent.findById(req.params.id)
 
     if (!typeEvent) {
-        return res.status(404).json({message: "Tipo de Evento com Id não encontrado."});        
+        return res.status(404).json({message: "Tipo de Evento com Id não encontrado"});        
     };
     return res.status(200).send(typeEvent);
 
