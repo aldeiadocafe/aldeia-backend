@@ -1,26 +1,25 @@
 const express = require("express");
-const app = express();
-const conn = require("./db/conn");
 
 //Tornar o servidor acessivel
 const cors = require("cors");
+
+const app = express();
+
 //app.use(cors());
 
+const conn = require("./db/conn");
+
+// 1. Configure o CORS IMEDIATAMENTE no topo
 app.use(cors({
   origin: [
-    'http://localhost:5173', // Se estiver usando Vite
-    'https://app.aldeiadocafe.com.br'    // Substitua pela URL do seu frontend
-    ], 
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  credentials: true
+    'https://app.aldeiadocafe.com.br', 
+    'http://localhost:5000'], // Adicione suas URLs
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  credentials: true // Ative se usar cookies/tokens no header
 }));
 
-app.use(cors({
-  origin: 'https://vercel.app', // Substitua pela URL do seu frontend
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  credentials: true
-}));
-
+// 2. Responda rapidamente a requisições de Preflight (OPTIONS)
+app.options('*', cors()); 
 //para usar o .env
 require("dotenv/config");
 const api = process.env.API_URL;
