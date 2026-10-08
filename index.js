@@ -8,10 +8,9 @@ const cors = require("cors");
 
 // Lista de origens permitidas
 const allowedOrigins = [
-    '*'
 //  'http://localhost:3000', // Seu React local (mude a porta se necessário)
-//  'http://localhost:5173', // Se estiver usando Vite
-//  'https://vercel.app', // Seu React em produção
+  'http://localhost:5173', // Se estiver usando Vite
+  'https://app.aldeiadocafe.com.br/', // Seu React em produção
 ]
 
 app.use(cors({
