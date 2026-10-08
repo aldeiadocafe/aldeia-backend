@@ -6,7 +6,7 @@ const conn = require("./db/conn");
 const cors = require("cors");
 //app.use(cors());
 app.use(cors({
-  origin: 'https://app.aldeiadocafe.com.br/',
+  origin: 'https://app.aldeiadocafe.com.br',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true
 }));
