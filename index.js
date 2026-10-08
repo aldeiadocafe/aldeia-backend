@@ -5,13 +5,29 @@ const conn = require("./db/conn");
 //Tornar o servidor acessivel
 const cors = require("cors");
 //app.use(cors());
-const corsOptions ={
-   origin:'*', 
-   credentials:true,            //access-control-allow-credentials:true
-   optionSuccessStatus:200,
-}
 
-app.use(cors(corsOptions)) // Use this after the variable declaration
+// Lista de origens permitidas
+const allowedOrigins = [
+    '*'
+//  'http://localhost:3000', // Seu React local (mude a porta se necessário)
+//  'http://localhost:5173', // Se estiver usando Vite
+//  'https://vercel.app', // Seu React em produção
+]
+
+app.use(cors({
+  origin: function (origin, callback) {
+    // Permite requisições sem origem (como aplicativos móveis, Postman, ou curl)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Não permitido pelo CORS'));
+    }
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 //para usar o .env
 require("dotenv/config");
