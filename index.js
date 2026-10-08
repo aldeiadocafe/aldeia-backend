@@ -5,21 +5,11 @@ const cors = require("cors");
 
 const app = express();
 
-//app.use(cors());
+app.use(cors());
 
 const conn = require("./db/conn");
 
-// 1. Configure o CORS IMEDIATAMENTE no topo
-app.use(cors({
-  origin: [
-    'https://app.aldeiadocafe.com.br', 
-    'http://localhost:5000'], // Adicione suas URLs
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  credentials: true // Ative se usar cookies/tokens no header
-}));
 
-// 2. Responda rapidamente a requisições de Preflight (OPTIONS)
-app.options('*', cors()); 
 //para usar o .env
 require("dotenv/config");
 const api = process.env.API_URL;
