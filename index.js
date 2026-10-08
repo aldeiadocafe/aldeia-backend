@@ -3,15 +3,8 @@ const cors = require("cors");
 
 const app = express();
 
-//app.use(cors());
+app.use(cors());
 /*
-// Libera o CORS para todas as origens e métodos
-app.use(cors({
-  origin: '*', // Permite qualquer domínio
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
-*/
 // Lista de sites permitidos a fazer requisições para a sua API
 const allowedOrigins = [
   'https://app.aldeiadocafe.com.br',
@@ -33,7 +26,7 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-
+*/
 const conn = require("./db/conn");
 
 
@@ -127,15 +120,15 @@ app.use(`${api}/conversationsitem`, conversationsItemRoutes);
 //Rotas Lista de Compra
 const shoppingsRoutes = require("./routes/shoppingsRoutes");
 app.use(`${api}/shoppings`, shoppingsRoutes);
-/*
+
 //Rotas Tipo de Evento
 const typeEventsRoutes = require("./routes/typeEventsRoutes");
 app.use(`${api}/typeEvents`, typeEventsRoutes);
 
 //Rotas Escala
-const schedulesRoutes = require("./routes/schedulesRoutes");
+const schedulesRoutes = require("./routes/schedulesRoutes1");
 app.use(`${api}/schedules`, schedulesRoutes);
-*/
+
 //app.listen(5000, () => {
 app.listen(process.env.PORT, () => {    
     console.log("Servidor rodando na porta " + process.env.PORT); 
