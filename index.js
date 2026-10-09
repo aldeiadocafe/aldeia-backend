@@ -129,6 +129,10 @@ app.use(`${api}/typeEvents`, typeEventsRoutes);
 const schedulesRoutes = require("./routes/schedulesRoutes");
 app.use(`${api}/schedules`, schedulesRoutes);
 
+//Rotas Draft
+const draftSchedulesRoutes = require("./routes/draftSchedulesRoutes");
+app.use(`${api}/draftSchedules`, draftSchedulesRoutes);
+
 //app.listen(5000, () => {
 app.listen(process.env.PORT, () => {    
     console.log("Servidor rodando na porta " + process.env.PORT); 
