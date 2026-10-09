@@ -16,4 +16,4 @@ const draftScheduleSchema = new mongoose.Schema({
     dia:        { type: Date},
 });
 
-module.exports = mongoose.model("Schedule", draftScheduleSchema);
+module.exports = mongoose.model("DraftSchedule", draftScheduleSchema);
