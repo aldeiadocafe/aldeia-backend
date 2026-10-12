@@ -2,11 +2,13 @@ const express = require("express");
 const router = express.Router();
 
 const { connectDB } = require("../db/connectDB");
+const Schedule = require("../models/Schedule")
 const DraftSchedule = require("../models/DraftSchedule");
 const Company = require("../models/Company");
 const User = require("../models/User");
 const TypeEvent = require("../models/TypeEvent");
 const { default: mongoose } = require("mongoose");
+const VersionSchedule = require("../models/VersionSchedule");
 
 // Criar Um Evento
 router.post("/", async(req, res) => {
@@ -33,6 +35,133 @@ router.post("/", async(req, res) => {
     res.send(draft);
 
 });
+
+// Ativar Draft
+router.post("/activateDraft", async(req, res) => {
+
+    //Iniciar session
+    const session = await mongoose.startSession()
+
+    //Iniciar Transacao
+    session.startTransaction()
+
+    try {
+
+        const { eventos, usuarioAtivacao } = req.body
+
+        if (!Array.isArray(eventos)) {
+            return res.status(404).json({ message: 'O corpo da requisição deve ser um array' });
+        }
+
+        // 1. Extrair empresas únicas do array para evitar buscas repetidas
+        const empresasParaVerificar = [...new Set(eventos.map(i => i.empresa))];
+
+        // 2. Verificar no banco de dados se essas empresas existem
+        const empresasExistentes = await Company.find({
+            _id: { $in: empresasParaVerificar }
+            });
+
+        if (empresasExistentes.length !== empresasParaVerificar.length) {
+            return res.status(404).json({
+                message: 'Uma ou mais empresas não são válidas.'
+            });
+        }
+
+        const usersParaVerificar = [...new Set(eventos.map(i => i.usuario))];        
+        const usersExistentes = await User.find({
+            _id: { $in: usersParaVerificar }
+            });
+        if (usersExistentes.length !== usersParaVerificar.length) {
+            return res.status(404).json({
+                message: 'Uma ou mais usuários não são válidas.'
+            });
+        }
+
+        const tiposParaVerificar = [...new Set(eventos.map(i => i.tipoEvento))];
+        const tiposExistentes = await TypeEvent.find({
+            _id: { $in: tiposParaVerificar }
+            });
+        if (tiposExistentes.length !== tiposParaVerificar.length) {            
+            return res.status(404).json({
+                message: 'Uma ou mais tipos de evento não são válidas.'
+            });
+        }
+
+        // 1. Buscar todos os registros da origem (use .lean() para performance)
+        const registrosOrigem = await Schedule.find().lean();
+        // 2. Mapear, adicionar novos campos e remover o _id original
+        const novosRegistrosAux = registrosOrigem.map((schedule) => {
+            const { _id, ...restoDoObjeto } = schedule; // remove o _id antigo
+
+            return {
+            ...restoDoObjeto,
+            };
+        });
+
+        const novosRegistros = {
+            dataAtivacao:       new Date(),
+            usuarioAtivacao:    usuarioAtivacao,
+            eventos:            novosRegistrosAux
+        }        
+
+        // 3. Inserir todos na nova coleção
+        const resultado = await VersionSchedule.insertMany(novosRegistros, {session});        
+
+        await Schedule.deleteMany({}, {session})
+
+        // Preparar as operações
+        const operations = eventos.map(evento => ({
+            updateOne: {
+                filter: { 
+                    empresa:    evento.empresa,
+                    usuario:    evento.usuario,
+                    dia:        evento.dia                    
+                },
+                update: { $setOnInsert: {
+                    empresa:    evento.empresa,
+                    usuario:    evento.usuario,
+                    tipoEvento: evento.tipoEvento,
+                    dia:        evento.dia                    
+                }},
+                upsert: true
+            }
+        }))
+
+        // Executa tudop de uma vez
+        const eventosCreate = await Schedule.bulkWrite(operations, {session})
+
+        await DraftSchedule.deleteMany({}, {session})
+
+        // Salvar todas as operações
+        await session.commitTransaction()
+
+        // Carregar Itens criados usando os IDs retornados pelo bulkWrite
+        const upsertedIds = Object.values(eventosCreate.upsertedIds);
+        const eventosCriados = await Schedule.find({ _id: { $in: upsertedIds } });
+
+        return res.status(200).send(eventosCriados)
+/*        
+        await session.abortTransaction()
+        return res.status(200).send("teste")
+*/        
+    } catch (error) {
+
+        //Abortar
+        await session.abortTransaction()
+
+        return res.status(404).json({ 
+                success: false,
+                message: 'Erro ao ativar Draft de Escala'
+            });
+
+    } finally {
+
+        //Finalizar a sessao
+        session.endSession()
+    }
+
+})
+
 
 // Gravar todos os Eventos
 router.post("/saveDraft", async(req, res) => {

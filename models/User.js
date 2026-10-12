@@ -10,6 +10,7 @@ const userSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Company'
     }],
+    permissions:[{ type: String, required: true }],
     dataCriacao:{type: Date},
     usuarioCriacao: {
         type:       mongoose.Schema.Types.ObjectId,

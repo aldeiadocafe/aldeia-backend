@@ -14,12 +14,13 @@ router.post("/", async(req, res) => {
     const hashedPassword = await bcrypt.hash(req.body.senha, 10);
 
     let user = new User({
-        email:      req.body.email.toUpperCase(),
-        nome:       req.body.nome.toUpperCase(),
-        senha:      hashedPassword,
-        telefone:   req.body.telefone,
-        situacao:   req.body.situacao ? req.body.situacao.toUpperCase() : 'ATIVO',
-        empresas:   req.body.empresas,
+        email:          req.body.email.toUpperCase(),
+        nome:           req.body.nome.toUpperCase(),
+        senha:          hashedPassword,
+        telefone:       req.body.telefone,
+        situacao:       req.body.situacao ? req.body.situacao.toUpperCase() : 'ATIVO',
+        empresas:       req.body.empresas,
+        permissions:    req.body.permissions,
         usuarioCriacao: req.body.usuarioCriacao,
         dataCriacao:    new Date()
 
@@ -92,11 +93,12 @@ router.put("/:id", async(req, res) => {
     updateData.dataAlteracao    = new Date()
     updateData.usuarioAlteracao = req.body.usuarioAlteracao
 
-    if (req.body.email)             updateData.email = req.body.email.toUpperCase();
-    if (req.body.nome)              updateData.nome = req.body.nome.toUpperCase();
-    if (req.body.telefone)          updateData.telefone = req.body.telefone;
-    if (req.body.situacao)          updateData.situacao = req.body.situacao.toUpperCase();
-    if (req.body.empresas)          updateData.empresas = req.body.empresas;   
+    if (req.body.email)         updateData.email        = req.body.email.toUpperCase();
+    if (req.body.nome)          updateData.nome         = req.body.nome.toUpperCase();
+    if (req.body.telefone)      updateData.telefone     = req.body.telefone;
+    if (req.body.situacao)      updateData.situacao     = req.body.situacao.toUpperCase();
+    if (req.body.empresas)      updateData.empresas     = req.body.empresas;   
+    if (req.body.permisisons)   updateData.permissions  = req.body.permissions;   
 
     if (req.body.senha) {
         // 1. Gerar salt e hash (10 é o custo padrão/recomendado)

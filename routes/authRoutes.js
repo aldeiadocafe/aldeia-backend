@@ -31,6 +31,7 @@ router.post("/", async (req, res) => {
             email:      nome.toUpperCase(),
             senha:      hashedPassword,
             situacao:   'ATIVO',
+            permission: ['ALL']
         });
 
         user = await user.save();
@@ -77,7 +78,7 @@ router.post("/", async (req, res) => {
   // 4. Enviar token
 //  res.header('auth-token', token).json({ token, user: { id: user._id, nome: user.nome } });
   res.header('auth-token', token).json({ token, user });
-  
+
 });
 
 module.exports = router;
