@@ -93,6 +93,83 @@ router.post("/", async(req, res) => {
 
 });
 
+// Reabrir Inventario
+router.post("/reabrir", async(req, res) => {
+
+    const inventoryId       = req.body._id
+    const usuarioAlteracao  = req.body.usuarioAlteracao
+
+    const inventory = await Inventory.findById(inventoryId)
+    if (!inventory) {
+        return res.status(404).json({message: "Inventário não localizado!"})
+    }
+
+    //Pesquisar Local
+    const places = await PlacesInventory.findOne({
+        inventory: inventoryId,
+    })
+    if (!places) {
+        return res.status(404).json({message: "Inventário sem localização!"})
+    } 
+
+    const countPlaces = await CountPlaces.findOne({
+        placesInventory: places._id
+    })
+    if (!countPlaces) {
+        return res.status(404).json({message: "Nenhum contagem localizada para esse inventário!"})
+    }
+
+    //Iniciar sessao
+    const session = await mongoose.startSession()
+    
+    //Iniciar Transacao
+    session.startTransaction()
+
+    try {
+
+        //Atualizar as tabelas de Estoque
+        await PlacesInventory.updateMany(
+            { inventory: inventory._id },
+            { $set: { situacao: 'EM PROCESSO' , usuarioAlteracao: usuarioAlteracao } },
+            { session }
+        );
+
+        await Inventory.findByIdAndUpdate(
+            inventoryId,
+            {   $set: {                             // Atualiza apenas um campo
+                    situacao:           'EM PROCESSO',
+                    usuarioAlteracao:   usuarioAlteracao,
+                }
+            },
+            {session, new: true, runValidators: true }    // RunValidators garante validação do schema
+        );
+
+        // Salvar todas as operações
+        await session.commitTransaction();
+        return res.status(200).send(inventory)
+        
+/*
+        await session.abortTransaction()
+        return res.status(200).send("teste")
+*/
+
+    } catch (error) {
+
+        console.log(error)
+
+        //Abortar
+        await session.abortTransaction()
+
+        res.status(400).send("Não foi possível finalizar Inventário")
+
+    } finally {
+
+        //Finalizar a sessao
+        session.endSession()
+    }
+
+});
+
 //Finalizar Inventário
 router.post("/finalizar", async(req, res) => {
 
