@@ -10,8 +10,9 @@ router.post("/", async(req, res) => {
     await connectDB()
 
     let typeEvent = new TypeEvent({
-        tipoEvento: req.body.tipoEvento.toUpperCase().trim(),
-        cor:        req.body.cor,
+        tipoEvento:         req.body.tipoEvento.toUpperCase().trim(),
+        cor:                req.body.cor,
+        calcularDespesa:    req.calcularDespesa,
     });
 
     //Verificar se já existe a unidade
@@ -65,8 +66,9 @@ router.put("/:id", async(req, res) => {
     await connectDB()
     const typeEvent = await TypeEvent.findByIdAndUpdate(req.params.id,
         {
-            tipoEvento: req.body.tipoEvento,
-            cor:        req.body.cor,
+            tipoEvento:         req.body.tipoEvento,
+            cor:                req.body.cor,
+            calcularDespesa:    req.body.calcularDespesa,
         },
         {new: true}
     );
