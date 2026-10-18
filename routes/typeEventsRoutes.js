@@ -12,7 +12,7 @@ router.post("/", async(req, res) => {
     let typeEvent = new TypeEvent({
         tipoEvento:         req.body.tipoEvento.toUpperCase().trim(),
         cor:                req.body.cor,
-        calcularDespesa:    req.calcularDespesa,
+        calcularDespesa:    req.body.calcularDespesa,
     });
 
     //Verificar se já existe a unidade
@@ -38,6 +38,7 @@ router.get('/', async(req, res) => {
     if (tipoEvento) filter.tipoEvento = tipoEvento.toUpperCase().trim();
     
     const typeEventList = await TypeEvent.find(filter)
+                                .sort({tipoEvento: 1})
 
     if(typeEventList.length === 0) {
 
