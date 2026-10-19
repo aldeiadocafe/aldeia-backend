@@ -13,6 +13,7 @@ router.post("/", async(req, res) => {
         tipoEvento:         req.body.tipoEvento.toUpperCase().trim(),
         cor:                req.body.cor,
         calcularDespesa:    req.body.calcularDespesa,
+        ativo:              req.body.ativo,
     });
 
     //Verificar se já existe a unidade
@@ -70,6 +71,7 @@ router.put("/:id", async(req, res) => {
             tipoEvento:         req.body.tipoEvento,
             cor:                req.body.cor,
             calcularDespesa:    req.body.calcularDespesa,
+            ativo:              req.body.ativo,
         },
         {new: true}
     );
