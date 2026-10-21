@@ -25,7 +25,7 @@ router.get('/', async(req, res) => {
     }
     
     const versionList = await VersionSchedule.find(filter)
-                                    .sort({dataAtivacao: 2});
+                                    .sort({dataAtivacao: 0});
 
     if(versionList.length === 0) {
 
