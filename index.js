@@ -129,9 +129,13 @@ app.use(`${api}/typeEvents`, typeEventsRoutes);
 const schedulesRoutes = require("./routes/schedulesRoutes");
 app.use(`${api}/schedules`, schedulesRoutes);
 
-//Rotas Draft
+//Rotas Draft Schedule
 const draftSchedulesRoutes = require("./routes/draftSchedulesRoutes");
 app.use(`${api}/draftSchedules`, draftSchedulesRoutes);
+
+//Rotas Version Schedule
+const versionSchedulesRoutes = require("./routes/versionSchedulesRoutes");
+app.use(`${api}/versionSchedules`, versionSchedulesRoutes);
 
 //app.listen(5000, () => {
 app.listen(process.env.PORT, () => {    

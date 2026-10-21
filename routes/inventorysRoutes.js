@@ -10,6 +10,7 @@ const StockBalance = require("../models/StockBalance");
 const DatesItemBalance = require("../models/DatesItemBalance");
 const ItemsInventory = require("../models/ItemsInventory");
 const DatesItemInventory = require("../models/DatesItemInventory");
+const { connectDB } = require("../db/connectDB");
 
 // Criar
 router.post("/", async(req, res) => {
@@ -398,6 +399,8 @@ router.get('/', async(req, res) => {
 
     if (tipoInventario)
         filter.tipoInventario = tipoInventario
+
+    await connectDB()
 
     const inventoryList = await Inventory.find(filter)
                                         .populate([
