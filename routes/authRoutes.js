@@ -54,7 +54,7 @@ router.post("/", async (req, res) => {
   } else {
 
     // 1. Verificar se usuário existe no MongoDB
-    user = await User.findOne({ nome: nome })
+    user = await User.findOne({ nome: nome.toUpperCase().trim() })
                     .populate([
                         { path: "empresas", select: 'nome' },
                         { path: 'usuarioCriacao',   select: 'nome email'},
