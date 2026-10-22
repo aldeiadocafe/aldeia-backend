@@ -10,19 +10,20 @@ const userSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Company'
     }],
-    permissions:    [{ type: String, required: true }],
-    valeTransporte: { type: Number},
-    valeRefeicao:   { type: Number},
-    dataCriacao:    {type: Date},
-    usuarioCriacao: {
-        type:       mongoose.Schema.Types.ObjectId,
-        ref:        "User",
-    },
-    dataAlteracao:{type: Date},
-    usuarioAlteracao: {
-        type:       mongoose.Schema.Types.ObjectId,
-        ref:        "User",
-    },
+    permissions:        [{ type: String, required: true }],
+    valeTransporte:     { type: Number},
+    valeRefeicao:       { type: Number},
+    visualizarEscalas:  { type: Boolean},
+    dataCriacao:        {type: Date},
+    usuarioCriacao:     {
+                            type:       mongoose.Schema.Types.ObjectId,
+                            ref:        "User",
+                        },
+    dataAlteracao:      { type: Date },
+    usuarioAlteracao:   {
+                            type:       mongoose.Schema.Types.ObjectId,
+                            ref:        "User",
+                        },
 
 });
 

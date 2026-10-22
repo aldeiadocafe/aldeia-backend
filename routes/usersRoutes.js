@@ -14,17 +14,18 @@ router.post("/", async(req, res) => {
     const hashedPassword = await bcrypt.hash(req.body.senha, 10);
 
     let user = new User({
-        email:          req.body.email.toUpperCase(),
-        nome:           req.body.nome.toUpperCase(),
-        senha:          hashedPassword,
-        telefone:       req.body.telefone,
-        situacao:       req.body.situacao ? req.body.situacao.toUpperCase() : 'ATIVO',
-        empresas:       req.body.empresas,
-        permissions:    req.body.permissions,
-        valeTransporte: req.body.valeTransporte,
-        valeRefeicao:   req.body.valeRefeicao,
-        usuarioCriacao: req.body.usuarioCriacao,
-        dataCriacao:    new Date()
+        email:              req.body.email.toUpperCase(),
+        nome:               req.body.nome.toUpperCase(),
+        senha:              hashedPassword,
+        telefone:           req.body.telefone,
+        situacao:           req.body.situacao ? req.body.situacao.toUpperCase() : 'ATIVO',
+        empresas:           req.body.empresas,
+        permissions:        req.body.permissions,
+        valeTransporte:     req.body.valeTransporte,
+        valeRefeicao:       req.body.valeRefeicao,
+        visualizarEscalas:  req.body.visualizarEscalas,
+        usuarioCriacao:     req.body.usuarioCriacao,
+        dataCriacao:        new Date()
 
     });
 
@@ -103,6 +104,7 @@ router.put("/:id", async(req, res) => {
     if (req.body.permisisons)       updateData.permissions      = req.body.permissions;   
     if (req.body.valeTransporte)    updateData.valeTransporte   = req.body.valeTransporte
     if (req.body.valeRefeicao)      updateData.valeRefeicao     = req.body.valeRefeicao
+    if (req.body.visualizarEscalas) updateData.visualizarEscalas= req.body.visualizarEscalas
     
     if (req.body.senha) {
         // 1. Gerar salt e hash (10 é o custo padrão/recomendado)
