@@ -10,6 +10,14 @@ const TypeEvent = require("../models/TypeEvent");
 const { default: mongoose } = require("mongoose");
 const VersionSchedule = require("../models/VersionSchedule");
 
+const app = express()
+
+//Aumentando o limente para JSON (ex: 50mb)
+app.use(express.json({ limit: '50mb'}))
+
+//Se estiver enviando dados via URL-encoded
+app.use(express.urlencoded({ limit: '50mb', extended: true}))
+
 // Criar Um Evento
 router.post("/", async(req, res) => {
 
