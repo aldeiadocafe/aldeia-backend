@@ -4,6 +4,11 @@ const cors = require("cors");
 const app = express();
 
 app.use(cors());
+
+// Substitua o express.json() padrão por este com limite aumentado:
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ limit: '10mb', extended: true }));
+
 /*
 // Lista de sites permitidos a fazer requisições para a sua API
 const allowedOrigins = [
