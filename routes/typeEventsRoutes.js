@@ -66,6 +66,13 @@ router.get("/:id", async (req, res) => {
 router.put("/:id", async(req, res) => {
 
     await connectDB()
+
+    //Verificar se já existe a unidade
+    const typeEventVerifica = await TypeEvent.find({tipoEvento: req.body.tipoEvento})
+    if(typeEventVerifica.length != 0 &&
+        typeEventVerifica[0]._id.toString() !== req.params.id
+    ) return res.status(404).send("Tipo de Evento já cadastrado!");
+
     const typeEvent = await TypeEvent.findByIdAndUpdate(req.params.id,
         {
             tipoEvento:         req.body.tipoEvento,
