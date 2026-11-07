@@ -91,6 +91,12 @@ router.put("/:id", async(req, res) => {
 
     await connectDB()
 
+    //Verificar se já existe
+    const userVerifica = await User.find({nome: req.body.nome});
+    if(userVerifica.length != 0 && userVerifica[0]._id.toString() !== req.params.id) {
+        return res.status(404).send("Nome já cadastrado!");
+    }
+
     const updateData = req.body;
 
     updateData.dataAlteracao    = new Date()
