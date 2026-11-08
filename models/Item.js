@@ -22,7 +22,8 @@ const itemSchema = new mongoose.Schema({
         ref:        "User",
     },
 
-    quantidadeMinima: { type: Number },
+    quantidadeMinima:   { type: Number },
+    custoUnitario:      { type: Number },
 
 });
 

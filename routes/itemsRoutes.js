@@ -40,7 +40,8 @@ router.post("/", async(req, res) => {
         unit,
         dataCriacao:        new Date(),
         usuarioCriacao:     req.body.usuarioCriacao,
-        quantidadeMinima:   req.body.quantidadeMinima
+        quantidadeMinima:   req.body.quantidadeMinima,
+        custoUnitario:      req.body.custoUnitario,
     });
 
     item = await item.save();
@@ -98,6 +99,7 @@ router.post("/gcom", async(req, res) => {
                     descricao:          item.descricao.toUpperCase().trim(),
                     situacao:           item.situacao.toUpperCase(),
                     unit:               item.unit,
+                    custoUnitario:      item.custoUnitario ? item.custoUnitario : 0,
                     dataCriacao:        new Date(),
                     usuarioCriacao:     item.usuarioCriacao,
                 } }, // Cria apenas se não existir
@@ -207,7 +209,8 @@ router.put("/:id", async(req, res) => {
             unit:               req.body.unit,
             dataAlteracao:      new Date(),
             usuarioAlteracao:   req.body.usuarioAlteracao,
-            quantidadeMinima:   req.body.quantidadeMinima
+            quantidadeMinima:   req.body.quantidadeMinima,
+            custoUnitario:      req.body.custoUnitario,
 
         },
         {new: true}
