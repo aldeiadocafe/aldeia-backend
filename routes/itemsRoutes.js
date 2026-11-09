@@ -41,7 +41,6 @@ router.post("/", async(req, res) => {
         dataCriacao:        new Date(),
         usuarioCriacao:     req.body.usuarioCriacao,
         quantidadeMinima:   req.body.quantidadeMinima,
-        custoUnitario:      req.body.custoUnitario,
     });
 
     item = await item.save();
@@ -99,7 +98,6 @@ router.post("/gcom", async(req, res) => {
                     descricao:          item.descricao.toUpperCase().trim(),
                     situacao:           item.situacao.toUpperCase(),
                     unit:               item.unit,
-                    custoUnitario:      item.custoUnitario ? item.custoUnitario : 0,
                     dataCriacao:        new Date(),
                     usuarioCriacao:     item.usuarioCriacao,
                 } }, // Cria apenas se não existir
@@ -178,26 +176,6 @@ router.get("/:id", async (req, res) => {
     res.status(200).send(item);
 });
 
-//Search itCodigo
-router.get("/searchItCodigo", async (req, res) => {
-
-//    const searchItCodigo = req.query.itCodigo;
-console.log(req.query)
-/*
-    try {
-        // 'i' option makes it case-insensitive
-        const results = await Item.find({
-            itCodigo: new RegExp(searchItCodigo, 'i')
-        })
-        res.status(200).send(results);
-    } catch (err) {
-        console.error(err);
-        res.status(500).send('Server Error')
-    }
-*/        
-res.status(500).send('Achou erro')
-})
-
 //Alterar Item
 router.put("/:id", async(req, res) => {
 
@@ -210,7 +188,6 @@ router.put("/:id", async(req, res) => {
             dataAlteracao:      new Date(),
             usuarioAlteracao:   req.body.usuarioAlteracao,
             quantidadeMinima:   req.body.quantidadeMinima,
-            custoUnitario:      req.body.custoUnitario,
 
         },
         {new: true}
@@ -258,5 +235,7 @@ router.delete("/:id", async (req, res) => {
         });
 
 });
+
+
 
 module.exports = router;

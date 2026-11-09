@@ -23,7 +23,6 @@ const itemSchema = new mongoose.Schema({
     },
 
     quantidadeMinima:   { type: Number },
-    custoUnitario:      { type: Number },
 
 });
 
