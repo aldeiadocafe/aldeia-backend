@@ -503,23 +503,23 @@ router.delete("/:id", async (req, res) => {
         const places = await PlacesInventory.findOne({
             inventory: req.params.id,
         })        
-/*
+
         if (places) {
+
             const countPlaces = await CountPlaces.findOne({
                 placesInventory: places._id
             })
             if (countPlaces) {
 
-                // Filtro vacío {} elimina todo en la colección
-                await StockBalance.deleteMany({ empresa: empresa._id},     {session});             
-                await DatesItemBalance.deleteMany({ empresa: empresa._id}, {session});
+                await CountPlaces.deleteMany({ placesInventory: places._id}, {session});             
 
-
-                return res.status(404).json({message: "Existe contagem para este inventário!"})
+//                return res.status(404).json({message: "Existe contagem para este inventário!"})
             }
+
+            await PlacesInventory.deleteMany({ inventory: req.params.id}, {session});             
+            
         }
-*/
-        await PlacesInventory.deleteMany({ inventory: req.params.id}, {session});             
+
 /*
         const placesVerifica = await PlacesInventory.find({inventory: req.params.id});
         if (placesVerifica.length >0 ) return res.status(404).send('Existe Local relacionado ao Inventário!');
