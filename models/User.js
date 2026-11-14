@@ -10,7 +10,7 @@ const userSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Company'
     }],
-    permissions:        [{ type: String, required: true }],
+    permissions:        [{ type: String }],
     valeTransporte:     { type: Number},
     valeRefeicao:       { type: Number},
     visualizarEscalas:  { type: Boolean},

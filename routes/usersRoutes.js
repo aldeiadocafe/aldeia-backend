@@ -117,7 +117,6 @@ router.put("/:id", async(req, res) => {
         const hashedPassword = await bcrypt.hash(req.body.senha, 10);
         updateData.senha = hashedPassword;
     }
-        
     const user = await User.findByIdAndUpdate(
         req.params.id,
         { $set: updateData },
