@@ -32,6 +32,7 @@ router.post("/", async(req, res) => {
 
     }
 
+    const dtCompra = new Date(req.body.dataCompra).toISOString().split('T')[0]
 
     let item = new Item({
         itCodigo:           req.body.itCodigo.toUpperCase().trim(),
@@ -40,7 +41,8 @@ router.post("/", async(req, res) => {
         unit,
         dataCriacao:        new Date(),
         usuarioCriacao:     req.body.usuarioCriacao,
-        quantidadeMinima:   req.body.quantidadeMinima,
+        dataCompra:         dtCompra,
+        valorCompra:        req.body.valorCompra,
     });
 
     item = await item.save();
@@ -187,7 +189,8 @@ router.put("/:id", async(req, res) => {
             unit:               req.body.unit,
             dataAlteracao:      new Date(),
             usuarioAlteracao:   req.body.usuarioAlteracao,
-            quantidadeMinima:   req.body.quantidadeMinima,
+            dataCompra:         req.body.dataCompra ? new Date(req.body.dataCompra).toISOString().split('T')[0] : null,
+            valorCompra:        req.body.valorCompra,
 
         },
         {new: true}
