@@ -181,6 +181,9 @@ router.get("/:id", async (req, res) => {
 //Alterar Item
 router.put("/:id", async(req, res) => {
 
+    const dtCompra = new Date(req.body.dataCompra).toISOString().split('T')[0]
+
+
     const item = await Item.findByIdAndUpdate(req.params.id,
         {
             itCodigo:           req.body.itCodigo.toUpperCase(),
@@ -189,7 +192,7 @@ router.put("/:id", async(req, res) => {
             unit:               req.body.unit,
             dataAlteracao:      new Date(),
             usuarioAlteracao:   req.body.usuarioAlteracao,
-            dataCompra:         req.body.dataCompra ? new Date(req.body.dataCompra).toISOString().split('T')[0] : null,
+            dataCompra:         dtCompra,
             valorCompra:        req.body.valorCompra,
 
         },
